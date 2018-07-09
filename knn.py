@@ -6,13 +6,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import operator
 
-x = np.array([[1,1],
-    [2,2],
-    [3,3],
-    [2, 2]])
-
-y = np.array([1, 2, 3, 2])
-
 class DataPoint:
     def __init__(self, x, label, dist=None):
         self.x = x
@@ -37,17 +30,20 @@ class KNN:
         dist = np.linalg.norm(x-y)
         return dist
 
-    def predict(self, x):
+    def predict(self, xi):
         """
-        Predicts class label for x.
+        Predicts class label for xi.
         """
 
         # calculate the distance for each point
+
+        self.xi = xi
+
         for p in self.data:
-            p.dist = self.euclidean_distance(x, p.x)
+            p.dist = self.euclidean_distance(xi, p.x)
 
         # k nearest neighbors
-        self.k_neighbors = sorted(self.data, key=lambda p: p.dist)[:3]
+        self.k_neighbors = sorted(self.data, key=lambda p: p.dist)[:self.k]
 
         # output probabilites for k nearest neighbors
         n = { p.label:0 for p in self.data }
@@ -59,17 +55,38 @@ class KNN:
 
     def vis(self, show=False):
 
-        x_cor = [x[0] for x in self.x]
-        y_cor = [y[1] for y in self.x]
-
         plt.figure(self.n_plot)
-        plt.scatter(x_cor, y_cor)
+        self.n_plot += 1
+
+        not_neighbors = [plt.scatter(p.x[0], p.x[1], color='black') for p in self.data if p not in self.k_neighbors]
+
+        for n in self.k_neighbors:
+            plt.scatter(n.x[0], n.x[1], color='green', marker='s')
+
+        plt.scatter(self.xi[0], self.xi[1], color='red', marker='*', s=100)
+
+        # label and show
         plt.xlabel('X')
         plt.ylabel('Y')
         plt.title('KNN')
+
+        plt.savefig('KNN.png')
         plt.show() if show else 0
 
+def main():
+
+    r = lambda x, y: np.random.randint(x, y)
+    n_samples = 100
+    x = np.array([ [r(1, 100), r(1, 100)] for _ in range(n_samples)])
+    y = np.array([ i[0] for i in x ])
+
+    knn = KNN(x, y, k=10)
+
+    p_value = [r(1, 100), r(1, 100)]
+    print('K-Nearest-Neighbors: {}'.format(knn.k))
+    print('Predicting: [1, 1] Output: {}'.format(knn.predict(p_value)))
+
+    knn.vis(show=True)
+
 if __name__ == '__main__':
-    knn = KNN(x, y)
-    print('Predicting: [1, 1] Output: {}'.format(knn.predict([1,1])))
-    #knn.vis(show=True)
+    main()

@@ -1,5 +1,5 @@
 # k-nearest-neighbors
-Basic k-nearest-neighbors (knn) implementation from scratch.
+Basic k-nearest-neighbors (knn) classification implementation from scratch.
 
-K-Nearest-Neighbors = 10
+<div>K-Nearest-Neighbors = 10</div>
 <img src='./KNN.png' />
